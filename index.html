@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freshwave site map</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"
+    />
+
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Freshwave Site Finder</h1>
+    <p>
+      Data scraped from the source code of the
+      <a href="https://sites.freshwavegroup.com/site-finder"
+        >public site finder</a
+      >
+      page. Hover over a marker to view details.
+    </p>
+
+    <div id="map"></div>
+
+    <script>
+      const osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+      const mapEl = document.getElementById("map");
+      const center = L.latLng(51.692, 5.155);
+
+      const map = L.map(mapEl, {
+        center: center,
+        zoom: 9,
+        layers: [osm],
+      });
+
+      const markers = L.markerClusterGroup();
+
+      fetch("sites.json").then((response) => {
+        response.json().then((json_markers) => {
+          json_markers.forEach((m) => {
+            markers.addLayer(
+              L.marker(L.latLng(m[1], m[2]), {
+                title: `Site ID: ${m[0]} || Name: ${m[3]}`,
+              })
+            );
+          });
+
+          map.addLayer(markers);
+        });
+      });
+    </script>
+  </body>
+</html>
